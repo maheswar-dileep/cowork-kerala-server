@@ -16,6 +16,7 @@ Backend API for CoWork Kerala Admin Panel - Manage coworking spaces, leads, and 
 
 - ✅ Authentication system with JWT
 - ✅ Password reset functionality
+- ✅ File upload with Cloudflare R2
 - ✅ Rate limiting on auth endpoints
 - ✅ Repository pattern architecture
 - ✅ Type-safe with TypeScript
@@ -23,11 +24,13 @@ Backend API for CoWork Kerala Admin Panel - Manage coworking spaces, leads, and 
 - ✅ Error handling middleware
 - ✅ CORS and security headers
 - ✅ Admin user seeding
+- ✅ Interactive Swagger API documentation
 
 ## Prerequisites
 
 - [Bun](https://bun.sh/) (v1.0 or higher)
 - MongoDB (v6.0 or higher)
+- Cloudflare R2 account (for file uploads)
 
 ## Installation
 
@@ -159,6 +162,123 @@ Content-Type: application/json
   "newPassword": "NewSecure@Password123"
 }
 ```
+
+### File Upload (Cloudflare R2)
+
+#### Upload Single File
+```http
+POST /api/v1/upload?folder=spaces
+Authorization: Bearer <token>
+Content-Type: multipart/form-data
+
+file: <binary file data>
+```
+
+#### Upload Multiple Files
+```http
+POST /api/v1/upload/multiple?folder=documents
+Authorization: Bearer <token>
+Content-Type: multipart/form-data
+
+files: <binary file data>
+files: <binary file data>
+```
+
+#### Delete File
+```http
+DELETE /api/v1/upload
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "key": "uploads/image_1234567890_abcdef12.jpg"
+}
+```
+
+#### Get Signed URL
+```http
+GET /api/v1/upload/signed-url?key=uploads/document.pdf&expiresIn=3600
+Authorization: Bearer <token>
+```
+
+**Supported Upload Folders:**
+- `spaces` - For coworking space images
+- `leads` - For lead-related documents
+- `users` - For user profiles
+- `documents` - For general documents
+- `uploads` - Default general uploads
+
+### Spaces Management
+
+#### Get All Spaces
+```http
+GET /api/v1/spaces?page=1&limit=10&status=active&city=Kochi
+Authorization: Bearer <token>
+```
+
+#### Get Space by ID
+```http
+GET /api/v1/spaces/:id
+Authorization: Bearer <token>
+```
+
+#### Create Space
+```http
+POST /api/v1/spaces
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "spaceName": "WorkHub Kochi",
+  "spaceType": "Coworking Space",
+  "city": "Kochi",
+  "spaceCategory": "Premium",
+  "shortDescription": "Modern coworking space",
+  "amenities": ["WiFi", "Coffee", "Meeting Rooms"],
+  "pricing": {
+    "hotDesk": 500,
+    "dedicatedDesk": 1000,
+    "privateOffice": 5000
+  },
+  "location": {
+    "address": "123 MG Road",
+    "pincode": "682001",
+    "latitude": 9.9312,
+    "longitude": 76.2673
+  },
+  "contact": {
+    "name": "Manager",
+    "email": "contact@workhub.com",
+    "phone": "+91 1234567890"
+  },
+  "status": "active"
+}
+```
+
+#### Update Space
+```http
+PUT /api/v1/spaces/:id
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "spaceName": "Updated Name",
+  "status": "inactive"
+}
+```
+
+#### Delete Space (Soft Delete)
+```http
+DELETE /api/v1/spaces/:id
+Authorization: Bearer <token>
+```
+
+**Space Features:**
+- Auto-generated Space IDs (SP-2025-001, SP-2025-002, etc.)
+- Soft delete (keeps data in database)
+- Pagination and filtering
+- Search by name, city, or type
+- Filter by status and city
 
 ## Project Structure
 

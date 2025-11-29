@@ -219,6 +219,124 @@ const swaggerOptions: swaggerJsdoc.Options = {
             },
           },
         },
+        Space: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              example: '507f1f77bcf86cd799439011',
+            },
+            spaceId: {
+              type: 'string',
+              example: 'SP-2025-001',
+            },
+            spaceName: {
+              type: 'string',
+              example: 'WorkHub Kochi',
+            },
+            spaceType: {
+              type: 'string',
+              example: 'Coworking Space',
+            },
+            city: {
+              type: 'string',
+              example: 'Kochi',
+            },
+            spaceCategory: {
+              type: 'string',
+              example: 'Premium',
+            },
+            shortDescription: {
+              type: 'string',
+              example: 'Modern coworking space in the heart of Kochi',
+            },
+            longDescription: {
+              type: 'string',
+            },
+            amenities: {
+              type: 'array',
+              items: {
+                type: 'string',
+              },
+              example: ['WiFi', 'Coffee', 'Meeting Rooms', 'Parking'],
+            },
+            pricing: {
+              type: 'object',
+              properties: {
+                hotDesk: {
+                  type: 'number',
+                  example: 500,
+                },
+                dedicatedDesk: {
+                  type: 'number',
+                  example: 1000,
+                },
+                privateOffice: {
+                  type: 'number',
+                  example: 5000,
+                },
+              },
+            },
+            location: {
+              type: 'object',
+              properties: {
+                address: {
+                  type: 'string',
+                  example: '123 MG Road, Kochi',
+                },
+                pincode: {
+                  type: 'string',
+                  example: '682001',
+                },
+                latitude: {
+                  type: 'number',
+                  example: 9.9312,
+                },
+                longitude: {
+                  type: 'number',
+                  example: 76.2673,
+                },
+              },
+            },
+            contact: {
+              type: 'object',
+              properties: {
+                name: {
+                  type: 'string',
+                  example: 'Manager Name',
+                },
+                email: {
+                  type: 'string',
+                  example: 'contact@workhub.com',
+                },
+                phone: {
+                  type: 'string',
+                  example: '+91 1234567890',
+                },
+              },
+            },
+            images: {
+              type: 'array',
+              items: {
+                type: 'string',
+              },
+              example: ['https://r2.example.com/space1.jpg'],
+            },
+            status: {
+              type: 'string',
+              enum: ['active', 'inactive', 'pending'],
+              example: 'active',
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+            },
+          },
+        },
       },
     },
     security: [

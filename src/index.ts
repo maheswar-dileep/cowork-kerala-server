@@ -11,6 +11,7 @@ import { swaggerSpec } from '@config/swagger';
 import authRoutes from './routes/auth.routes';
 import settingsRoutes from './routes/settings.routes';
 import uploadRoutes from './routes/upload.routes';
+import spaceRoutes from './routes/space.routes';
 
 const app: Application = express();
 
@@ -51,6 +52,7 @@ app.get('/api-docs.json', (_req: Request, res: Response) => {
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/settings', settingsRoutes);
 app.use('/api/v1/upload', uploadRoutes);
+app.use('/api/v1/spaces', spaceRoutes);
 
 // 404 handler (must be after all routes)
 app.use(notFound);
