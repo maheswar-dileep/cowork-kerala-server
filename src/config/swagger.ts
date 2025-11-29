@@ -337,6 +337,69 @@ const swaggerOptions: swaggerJsdoc.Options = {
             },
           },
         },
+        Lead: {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'string',
+              example: '507f1f77bcf86cd799439011',
+            },
+            leadId: {
+              type: 'string',
+              example: 'LD-2025-001',
+            },
+            name: {
+              type: 'string',
+              example: 'John Doe',
+            },
+            email: {
+              type: 'string',
+              format: 'email',
+              example: 'john.doe@example.com',
+            },
+            phone: {
+              type: 'string',
+              example: '+91 9876543210',
+            },
+            enquiredFor: {
+              type: 'string',
+              example: 'WorkHub Kochi',
+            },
+            spaceType: {
+              type: 'string',
+              example: 'Hot Desk',
+            },
+            numberOfSeats: {
+              type: 'integer',
+              example: 2,
+            },
+            location: {
+              type: 'string',
+              example: 'Kochi',
+            },
+            message: {
+              type: 'string',
+              example: 'I would like to schedule a visit',
+            },
+            date: {
+              type: 'string',
+              format: 'date-time',
+            },
+            status: {
+              type: 'string',
+              enum: ['new', 'contacted', 'qualified', 'converted', 'lost'],
+              example: 'new',
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time',
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time',
+            },
+          },
+        },
       },
     },
     security: [
