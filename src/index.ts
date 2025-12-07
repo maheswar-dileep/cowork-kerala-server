@@ -14,6 +14,7 @@ import uploadRoutes from "./routes/upload.routes";
 import spaceRoutes from "./routes/space.routes";
 import leadRoutes from "./routes/lead.routes";
 import locationRoutes from "./routes/location.routes";
+import dashboardRoutes from "./routes/dashboard.routes";
 
 const app: Application = express();
 
@@ -63,6 +64,7 @@ app.use("/api/v1/upload", uploadRoutes);
 app.use("/api/v1/spaces", spaceRoutes);
 app.use("/api/v1/leads", leadRoutes);
 app.use("/api/v1/locations", locationRoutes);
+app.use("/api/v1/dashboard", dashboardRoutes);
 
 // 404 handler (must be after all routes)
 app.use(notFound);
