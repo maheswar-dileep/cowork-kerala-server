@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
-import { authService } from '@services/auth.service';
-import { emailService } from '@services/email.service';
-import { ApiError } from '../types/common.types';
+import { Request, Response, NextFunction } from "express";
+import { authService } from "@services/auth.service";
+import { emailService } from "@services/email.service";
+import { ApiError } from "../types/common.types";
 
 export class AuthController {
   /**
@@ -24,14 +24,18 @@ export class AuthController {
    * Logout controller
    * POST /api/v1/auth/logout
    */
-  async logout(_req: Request, res: Response, next: NextFunction): Promise<void> {
+  async logout(
+    _req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       // With JWT, logout is handled on the client side by removing the token
       // But we can perform any cleanup here if needed
 
       res.status(200).json({
         success: true,
-        message: 'Logged out successfully',
+        message: "Logged out successfully",
       });
     } catch (error) {
       next(error);
@@ -54,7 +58,9 @@ export class AuthController {
 
       // Get user details for personalized email
       const user = await authService.getUserById(
-        (await authService.login({ email, password: '' })).user.id
+        (
+          await authService.login({ email, password: "" })
+        ).user.id
       );
 
       // Send reset email (in production, you'd send this to the user's email)
@@ -64,7 +70,7 @@ export class AuthController {
 
       res.status(200).json({
         success: true,
-        message: 'If the email exists, a reset link has been sent',
+        message: "If the email exists, a reset link has been sent",
       });
     } catch (error) {
       next(error);
@@ -87,7 +93,7 @@ export class AuthController {
 
       res.status(200).json({
         success: true,
-        message: 'Password has been reset successfully',
+        message: "Password has been reset successfully",
       });
     } catch (error) {
       next(error);
@@ -107,7 +113,7 @@ export class AuthController {
       const userId = req.user?.id;
 
       if (!userId) {
-        throw new ApiError(401, 'Unauthorized');
+        throw new ApiError(401, "Unauthorized");
       }
 
       const { currentPassword, newPassword } = req.body;
@@ -116,7 +122,7 @@ export class AuthController {
 
       res.status(200).json({
         success: true,
-        message: 'Password updated successfully',
+        message: "Password updated successfully",
       });
     } catch (error) {
       next(error);
@@ -136,13 +142,13 @@ export class AuthController {
       const userId = req.user?.id;
 
       if (!userId) {
-        throw new ApiError(401, 'Unauthorized');
+        throw new ApiError(401, "Unauthorized");
       }
 
       const user = await authService.getUserById(userId);
 
       if (!user) {
-        throw new ApiError(404, 'User not found');
+        throw new ApiError(404, "User not found");
       }
 
       res.status(200).json({

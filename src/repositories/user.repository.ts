@@ -1,12 +1,12 @@
-import { User } from '@models/User.model';
-import { IUser } from '../types/user.types';
+import { User } from "@models/User.model";
+import { IUser } from "../types/user.types";
 
 export class UserRepository {
   /**
    * Find user by email
    */
   async findByEmail(email: string): Promise<IUser | null> {
-    return await User.findOne({ email }).select('+password');
+    return await User.findOne({ email }).select("+password");
   }
 
   /**
@@ -27,7 +27,10 @@ export class UserRepository {
   /**
    * Update user by ID
    */
-  async updateById(id: string, updateData: Partial<IUser>): Promise<IUser | null> {
+  async updateById(
+    id: string,
+    updateData: Partial<IUser>
+  ): Promise<IUser | null> {
     return await User.findByIdAndUpdate(id, updateData, {
       new: true,
       runValidators: true,
@@ -48,7 +51,7 @@ export class UserRepository {
     return await User.findOne({
       passwordResetToken: token,
       passwordResetExpires: { $gt: Date.now() },
-    }).select('+password +passwordResetToken +passwordResetExpires');
+    }).select("+password +passwordResetToken +passwordResetExpires");
   }
 
   /**

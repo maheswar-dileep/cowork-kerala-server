@@ -1,13 +1,13 @@
-import { Router } from 'express';
-import { authController } from '@controllers/auth.controller';
-import { authenticate } from '@middlewares/auth.middleware';
-import { validate } from '@middlewares/validation.middleware';
+import { Router } from "express";
+import { authController } from "@controllers/auth.controller";
+import { authenticate } from "@middlewares/auth.middleware";
+import { validate } from "@middlewares/validation.middleware";
 import {
   loginSchema,
   passwordResetRequestSchema,
   passwordResetSchema,
-} from '@validators/auth.validator';
-import rateLimit from 'express-rate-limit';
+} from "@validators/auth.validator";
+import rateLimit from "express-rate-limit";
 
 const router = Router();
 
@@ -15,7 +15,7 @@ const router = Router();
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 5, // limit each IP to 5 requests per windowMs
-  message: 'Too many login attempts, please try again after 15 minutes',
+  message: "Too many login attempts, please try again after 15 minutes",
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -24,7 +24,7 @@ const loginLimiter = rateLimit({
 const passwordResetLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 3, // limit each IP to 3 requests per hour
-  message: 'Too many password reset requests, please try again later',
+  message: "Too many password reset requests, please try again later",
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -71,7 +71,7 @@ const passwordResetLimiter = rateLimit({
  *               $ref: '#/components/schemas/Error'
  */
 router.post(
-  '/login',
+  "/login",
   loginLimiter,
   validate(loginSchema),
   authController.login.bind(authController)
@@ -102,7 +102,7 @@ router.post(
  *               $ref: '#/components/schemas/Error'
  */
 router.post(
-  '/logout',
+  "/logout",
   authenticate,
   authController.logout.bind(authController)
 );
@@ -143,7 +143,7 @@ router.post(
  *               $ref: '#/components/schemas/Error'
  */
 router.post(
-  '/forgot-password',
+  "/forgot-password",
   passwordResetLimiter,
   validate(passwordResetRequestSchema),
   authController.requestPasswordReset.bind(authController)
@@ -179,7 +179,7 @@ router.post(
  *               $ref: '#/components/schemas/Error'
  */
 router.post(
-  '/reset-password',
+  "/reset-password",
   validate(passwordResetSchema),
   authController.resetPassword.bind(authController)
 );
@@ -220,6 +220,10 @@ router.post(
  *             schema:
  *               $ref: '#/components/schemas/Error'
  */
-router.get('/me', authenticate, authController.getCurrentUser.bind(authController));
+router.get(
+  "/me",
+  authenticate,
+  authController.getCurrentUser.bind(authController)
+);
 
 export default router;
