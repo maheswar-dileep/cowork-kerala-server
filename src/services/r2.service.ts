@@ -1,8 +1,13 @@
-import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { config } from '@config/env';
-import crypto from 'crypto';
-import path from 'path';
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+  GetObjectCommand,
+} from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { config } from "@config/env";
+import crypto from "crypto";
+import path from "path";
 
 export class R2Service {
   private client: S3Client;
@@ -12,7 +17,7 @@ export class R2Service {
   constructor() {
     // Initialize S3 client for Cloudflare R2
     this.client = new S3Client({
-      region: 'auto',
+      region: "auto",
       endpoint: `https://${config.r2.accountId}.r2.cloudflarestorage.com`,
       credentials: {
         accessKeyId: config.r2.accessKeyId,
@@ -29,10 +34,10 @@ export class R2Service {
    */
   private generateFileName(originalName: string): string {
     const timestamp = Date.now();
-    const randomString = crypto.randomBytes(8).toString('hex');
+    const randomString = crypto.randomBytes(8).toString("hex");
     const ext = path.extname(originalName);
     const nameWithoutExt = path.basename(originalName, ext);
-    const sanitizedName = nameWithoutExt.replace(/[^a-zA-Z0-9]/g, '_');
+    const sanitizedName = nameWithoutExt.replace(/[^a-zA-Z0-9]/g, "_");
 
     return `${sanitizedName}_${timestamp}_${randomString}${ext}`;
   }
@@ -42,7 +47,7 @@ export class R2Service {
    */
   async uploadFile(
     file: Express.Multer.File,
-    folder: string = 'uploads'
+    folder: string = "uploads"
   ): Promise<{ key: string; url: string; size: number; mimeType: string }> {
     try {
       const fileName = this.generateFileName(file.originalname);
@@ -74,8 +79,8 @@ export class R2Service {
         mimeType: file.mimetype,
       };
     } catch (error) {
-      console.error('R2 upload error:', error);
-      throw new Error('Failed to upload file to R2');
+      console.error("R2 upload error:", error);
+      throw new Error("Failed to upload file to R2");
     }
   }
 
@@ -84,8 +89,10 @@ export class R2Service {
    */
   async uploadMultipleFiles(
     files: Express.Multer.File[],
-    folder: string = 'uploads'
-  ): Promise<Array<{ key: string; url: string; size: number; mimeType: string }>> {
+    folder: string = "uploads"
+  ): Promise<
+    Array<{ key: string; url: string; size: number; mimeType: string }>
+  > {
     const uploadPromises = files.map((file) => this.uploadFile(file, folder));
     return await Promise.all(uploadPromises);
   }
@@ -102,8 +109,8 @@ export class R2Service {
 
       await this.client.send(command);
     } catch (error) {
-      console.error('R2 delete error:', error);
-      throw new Error('Failed to delete file from R2');
+      console.error("R2 delete error:", error);
+      throw new Error("Failed to delete file from R2");
     }
   }
 
@@ -116,7 +123,7 @@ export class R2Service {
   }
 
   /**
-   * Generate a pre-signed URL for temporary access
+   * Generate a pre-signed URL for temporary access (GET)
    */
   async getSignedUrl(key: string, expiresIn: number = 3600): Promise<string> {
     try {
@@ -128,8 +135,31 @@ export class R2Service {
       const signedUrl = await getSignedUrl(this.client, command, { expiresIn });
       return signedUrl;
     } catch (error) {
-      console.error('R2 signed URL error:', error);
-      throw new Error('Failed to generate signed URL');
+      console.error("R2 signed URL error:", error);
+      throw new Error("Failed to generate signed URL");
+    }
+  }
+
+  /**
+   * Generate a pre-signed URL for uploading (PUT)
+   */
+  async getPutSignedUrl(
+    key: string,
+    contentType: string,
+    expiresIn: number = 3600
+  ): Promise<string> {
+    try {
+      const command = new PutObjectCommand({
+        Bucket: this.bucketName,
+        Key: key,
+        ContentType: contentType,
+      });
+
+      const signedUrl = await getSignedUrl(this.client, command, { expiresIn });
+      return signedUrl;
+    } catch (error) {
+      console.error("R2 PUT signed URL error:", error);
+      throw new Error("Failed to generate upload signed URL");
     }
   }
 

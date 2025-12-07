@@ -1,5 +1,5 @@
-import mongoose, { Schema } from 'mongoose';
-import { ISpace } from '../types/space.types';
+import mongoose, { Schema } from "mongoose";
+import { ISpace } from "../types/space.types";
 
 const spaceSchema = new Schema<ISpace>(
   {
@@ -10,22 +10,22 @@ const spaceSchema = new Schema<ISpace>(
     },
     spaceName: {
       type: String,
-      required: [true, 'Space name is required'],
+      required: [true, "Space name is required"],
       trim: true,
     },
     spaceType: {
       type: String,
-      required: [true, 'Space type is required'],
+      required: [true, "Space type is required"],
       trim: true,
     },
     city: {
       type: String,
-      required: [true, 'City is required'],
+      required: [true, "City is required"],
       trim: true,
     },
     spaceCategory: {
       type: String,
-      required: [true, 'Space category is required'],
+      required: [true, "Space category is required"],
       trim: true,
     },
     shortDescription: {
@@ -62,8 +62,8 @@ const spaceSchema = new Schema<ISpace>(
     },
     status: {
       type: String,
-      enum: ['active', 'inactive', 'pending'],
-      default: 'pending',
+      enum: ["active", "inactive", "pending"],
+      default: "pending",
     },
     isDeleted: {
       type: Boolean,
@@ -78,30 +78,29 @@ const spaceSchema = new Schema<ISpace>(
 
 // Index for faster queries
 spaceSchema.index({ city: 1, status: 1 });
-spaceSchema.index({ spaceId: 1 });
 spaceSchema.index({ isDeleted: 1 });
 
 // Pre-save hook to generate spaceId
-spaceSchema.pre('save', async function (next) {
+spaceSchema.pre("save", async function (next) {
   if (!this.spaceId) {
     try {
       // Get the current year
       const year = new Date().getFullYear();
 
       // Find the latest space ID for this year
-      const lastSpace = await mongoose.model('Space').findOne(
-        { spaceId: new RegExp(`^SP-${year}-`) },
-        { spaceId: 1 }
-      ).sort({ spaceId: -1 });
+      const lastSpace = await mongoose
+        .model("Space")
+        .findOne({ spaceId: new RegExp(`^SP-${year}-`) }, { spaceId: 1 })
+        .sort({ spaceId: -1 });
 
       let sequence = 1;
       if (lastSpace && lastSpace.spaceId) {
-        const lastSequence = parseInt(lastSpace.spaceId.split('-')[2]);
+        const lastSequence = parseInt(lastSpace.spaceId.split("-")[2]);
         sequence = lastSequence + 1;
       }
 
       // Generate new ID: SP-YYYY-NNN
-      this.spaceId = `SP-${year}-${String(sequence).padStart(3, '0')}`;
+      this.spaceId = `SP-${year}-${String(sequence).padStart(3, "0")}`;
     } catch (error: any) {
       next(error);
     }
@@ -120,4 +119,4 @@ spaceSchema.statics.findNonDeleted = function (filter = {}) {
   return this.find({ ...filter, isDeleted: false });
 };
 
-export const Space = mongoose.model<ISpace>('Space', spaceSchema);
+export const Space = mongoose.model<ISpace>("Space", spaceSchema);

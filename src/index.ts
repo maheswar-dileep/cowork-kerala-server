@@ -13,6 +13,7 @@ import settingsRoutes from "./routes/settings.routes";
 import uploadRoutes from "./routes/upload.routes";
 import spaceRoutes from "./routes/space.routes";
 import leadRoutes from "./routes/lead.routes";
+import locationRoutes from "./routes/location.routes";
 
 const app: Application = express();
 
@@ -23,7 +24,7 @@ connectDB();
 app.use(helmet()); // Security headers
 app.use(
   cors({
-    origin: config.cors.origin,
+    origin: [...config.cors.origin, "http://localhost:8080"],
     credentials: true,
   })
 );
@@ -61,6 +62,7 @@ app.use("/api/v1/settings", settingsRoutes);
 app.use("/api/v1/upload", uploadRoutes);
 app.use("/api/v1/spaces", spaceRoutes);
 app.use("/api/v1/leads", leadRoutes);
+app.use("/api/v1/locations", locationRoutes);
 
 // 404 handler (must be after all routes)
 app.use(notFound);
@@ -73,10 +75,11 @@ const PORT = config.port;
 
 app.listen(PORT, () => {
   console.log(`
-    Environment: ${config.nodeEnv.padEnd(38)}
-    Port:        ${String(PORT).padEnd(38)}
-    Health:      http://localhost:${PORT}/health 
-    API Docs:    http://localhost:${PORT}/api-docs 
+Environment: ${config.nodeEnv.padEnd(38)}
+Port:        ${String(PORT).padEnd(38)}
+CORS Origin: ${config.cors.origin.join(", ")}
+Health:      http://localhost:${PORT}/health 
+API Docs:    http://localhost:${PORT}/api-docs 
   `);
 });
 

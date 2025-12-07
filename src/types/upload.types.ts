@@ -27,9 +27,10 @@ export interface IDeleteMultipleFilesRequest {
 }
 
 export enum UploadFolder {
-  SPACES = 'spaces',
-  LEADS = 'leads',
-  USERS = 'users',
-  DOCUMENTS = 'documents',
-  GENERAL = 'uploads',
+  SPACES = "spaces",
+  LEADS = "leads",
+  USERS = "users",
+  DOCUMENTS = "documents",
+  GENERAL = "uploads",
+  LOCATIONS = "locations",
 }

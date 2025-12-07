@@ -1,21 +1,26 @@
-import { Request, Response, NextFunction } from 'express';
-import { r2Service } from '@services/r2.service';
-import { ApiError } from '../types/common.types';
-import { UploadFolder } from '../types/upload.types';
+import { Request, Response, NextFunction } from "express";
+import { r2Service } from "@services/r2.service";
+import { config } from "@config/env";
+import { ApiError } from "../types/common.types";
+import { UploadFolder } from "../types/upload.types";
 
 export class UploadController {
   /**
    * Upload single file
    * POST /api/v1/upload
    */
-  async uploadSingle(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async uploadSingle(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       if (!req.file) {
-        throw new ApiError(400, 'No file provided');
+        throw new ApiError(400, "No file provided");
       }
 
       if (!r2Service.isConfigured()) {
-        throw new ApiError(500, 'R2 storage is not configured');
+        throw new ApiError(500, "R2 storage is not configured");
       }
 
       const folder = (req.query.folder as UploadFolder) || UploadFolder.GENERAL;
@@ -24,7 +29,7 @@ export class UploadController {
 
       res.status(200).json({
         success: true,
-        message: 'File uploaded successfully',
+        message: "File uploaded successfully",
         data: {
           ...uploadedFile,
           originalName: req.file.originalname,
@@ -39,14 +44,18 @@ export class UploadController {
    * Upload multiple files
    * POST /api/v1/upload/multiple
    */
-  async uploadMultiple(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async uploadMultiple(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
-        throw new ApiError(400, 'No files provided');
+        throw new ApiError(400, "No files provided");
       }
 
       if (!r2Service.isConfigured()) {
-        throw new ApiError(500, 'R2 storage is not configured');
+        throw new ApiError(500, "R2 storage is not configured");
       }
 
       const folder = (req.query.folder as UploadFolder) || UploadFolder.GENERAL;
@@ -71,19 +80,23 @@ export class UploadController {
    * Delete file
    * DELETE /api/v1/upload
    */
-  async deleteFile(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async deleteFile(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const { key } = req.body;
 
       if (!r2Service.isConfigured()) {
-        throw new ApiError(500, 'R2 storage is not configured');
+        throw new ApiError(500, "R2 storage is not configured");
       }
 
       await r2Service.deleteFile(key);
 
       res.status(200).json({
         success: true,
-        message: 'File deleted successfully',
+        message: "File deleted successfully",
       });
     } catch (error) {
       next(error);
@@ -94,12 +107,16 @@ export class UploadController {
    * Delete multiple files
    * DELETE /api/v1/upload/multiple
    */
-  async deleteMultiple(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async deleteMultiple(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const { keys } = req.body;
 
       if (!r2Service.isConfigured()) {
-        throw new ApiError(500, 'R2 storage is not configured');
+        throw new ApiError(500, "R2 storage is not configured");
       }
 
       await r2Service.deleteMultipleFiles(keys);
@@ -117,12 +134,16 @@ export class UploadController {
    * Get signed URL for temporary access
    * GET /api/v1/upload/signed-url
    */
-  async getSignedUrl(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async getSignedUrl(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const { key, expiresIn } = req.query;
 
       if (!r2Service.isConfigured()) {
-        throw new ApiError(500, 'R2 storage is not configured');
+        throw new ApiError(500, "R2 storage is not configured");
       }
 
       const signedUrl = await r2Service.getSignedUrl(
@@ -136,6 +157,45 @@ export class UploadController {
           key,
           signedUrl,
           expiresIn: expiresIn || 3600,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+  /**
+   * Get PUT signed URL for direct upload
+   * GET /api/v1/upload/signed-url-put
+   */
+  async getPutSignedUrl(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const { folder, fileName, contentType } = req.query;
+
+      if (!r2Service.isConfigured()) {
+        throw new ApiError(500, "R2 storage is not configured");
+      }
+
+      const key = `${folder || UploadFolder.GENERAL}/${Date.now()}_${fileName}`;
+
+      const signedUrl = await r2Service.getPutSignedUrl(
+        key,
+        contentType as string
+      );
+
+      res.status(200).json({
+        success: true,
+        data: {
+          key,
+          signedUrl,
+          publicUrl: `${
+            r2Service["publicUrl"]
+              ? r2Service["publicUrl"]
+              : `https://${r2Service["bucketName"]}.${config.r2.accountId}.r2.cloudflarestorage.com`
+          }/${key}`,
         },
       });
     } catch (error) {

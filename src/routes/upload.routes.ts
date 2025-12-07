@@ -1,18 +1,19 @@
-import { Router } from 'express';
-import { uploadController } from '@controllers/upload.controller';
-import { authenticate } from '@middlewares/auth.middleware';
-import { validate } from '@middlewares/validation.middleware';
+import { Router } from "express";
+import { uploadController } from "@controllers/upload.controller";
+import { authenticate } from "@middlewares/auth.middleware";
+import { validate } from "@middlewares/validation.middleware";
 import {
   uploadSingle,
   uploadMultiple,
   handleMulterError,
-} from '@middlewares/upload.middleware';
+} from "@middlewares/upload.middleware";
 import {
   uploadQuerySchema,
   deleteFileSchema,
   deleteMultipleFilesSchema,
   getSignedUrlSchema,
-} from '@validators/upload.validator';
+  getPutSignedUrlSchema,
+} from "@validators/upload.validator";
 
 const router = Router();
 
@@ -86,7 +87,7 @@ const router = Router();
  *         description: R2 storage not configured or upload failed
  */
 router.post(
-  '/',
+  "/",
   authenticate,
   uploadSingle,
   handleMulterError,
@@ -161,7 +162,7 @@ router.post(
  *         description: Unauthorized
  */
 router.post(
-  '/multiple',
+  "/multiple",
   authenticate,
   uploadMultiple,
   handleMulterError,
@@ -205,7 +206,7 @@ router.post(
  *         description: Unauthorized
  */
 router.delete(
-  '/',
+  "/",
   authenticate,
   validate(deleteFileSchema),
   uploadController.deleteFile.bind(uploadController)
@@ -249,7 +250,7 @@ router.delete(
  *         description: Unauthorized
  */
 router.delete(
-  '/multiple',
+  "/multiple",
   authenticate,
   validate(deleteMultipleFilesSchema),
   uploadController.deleteMultiple.bind(uploadController)
@@ -308,10 +309,55 @@ router.delete(
  *         description: Unauthorized
  */
 router.get(
-  '/signed-url',
+  "/signed-url",
   authenticate,
   validate(getSignedUrlSchema),
   uploadController.getSignedUrl.bind(uploadController)
+);
+
+/**
+ * @swagger
+ * /upload/signed-url-put:
+ *   get:
+ *     tags:
+ *       - Upload
+ *     summary: Get PUT signed URL
+ *     description: Generate a signed URL for directly uploading a file
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: folder
+ *         schema:
+ *           type: string
+ *           enum: [spaces, leads, users, documents, uploads]
+ *           default: uploads
+ *         description: Target folder
+ *       - in: query
+ *         name: fileName
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Original file name
+ *       - in: query
+ *         name: contentType
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: File MIME type
+ *     responses:
+ *       200:
+ *         description: Signed URL generated successfully
+ *       400:
+ *         description: Invalid request
+ *       401:
+ *         description: Unauthorized
+ */
+router.get(
+  "/signed-url-put",
+  authenticate,
+  validate(getPutSignedUrlSchema),
+  uploadController.getPutSignedUrl.bind(uploadController)
 );
 
 export default router;

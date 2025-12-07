@@ -11,9 +11,11 @@ export const config = {
   },
 
   jwt: {
-    secret: process.env.JWT_SECRET || "your-default-secret-change-in-production",
+    secret:
+      process.env.JWT_SECRET || "your-default-secret-change-in-production",
     expiresIn: process.env.JWT_EXPIRES_IN || "7d",
-    passwordResetTokenExpiresIn: process.env.PASSWORD_RESET_TOKEN_EXPIRES_IN || "1h",
+    passwordResetTokenExpiresIn:
+      process.env.PASSWORD_RESET_TOKEN_EXPIRES_IN || "1h",
   },
 
   email: {
@@ -30,7 +32,10 @@ export const config = {
   },
 
   cors: {
-    origin: process.env.CORS_ORIGIN || "http://localhost:3001",
+    origin: (
+      (process.env.CORS_ORIGIN || "http://localhost:3001") +
+      ",http://localhost:8080,http://localhost:3000"
+    ).split(","),
   },
 
   seed: {
@@ -49,6 +54,9 @@ export const config = {
 
   upload: {
     maxFileSize: parseInt(process.env.MAX_FILE_SIZE || "5242880"), // 5MB default
-    allowedMimeTypes: (process.env.ALLOWED_MIME_TYPES || "image/jpeg,image/png,image/webp,application/pdf").split(","),
+    allowedMimeTypes: (
+      process.env.ALLOWED_MIME_TYPES ||
+      "image/jpeg,image/png,image/webp,application/pdf"
+    ).split(","),
   },
 };
