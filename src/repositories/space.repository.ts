@@ -1,5 +1,11 @@
-import { Space } from '@models/Space.model';
-import { ISpace, ISpaceInput, ISpaceFilters, IPaginationParams } from '../types/space.types';
+import mongoose from "mongoose";
+import { Space } from "@models/Space.model";
+import {
+  ISpace,
+  ISpaceInput,
+  ISpaceFilters,
+  IPaginationParams,
+} from "../types/space.types";
 
 export class SpaceRepository {
   /**
@@ -20,14 +26,14 @@ export class SpaceRepository {
     }
 
     if (filters.city) {
-      query.city = new RegExp(filters.city, 'i'); // Case-insensitive search
+      query.city = new RegExp(filters.city, "i"); // Case-insensitive search
     }
 
     if (filters.search) {
       query.$or = [
-        { spaceName: new RegExp(filters.search, 'i') },
-        { city: new RegExp(filters.search, 'i') },
-        { spaceType: new RegExp(filters.search, 'i') },
+        { spaceName: new RegExp(filters.search, "i") },
+        { city: new RegExp(filters.search, "i") },
+        { spaceType: new RegExp(filters.search, "i") },
       ];
     }
 
@@ -64,7 +70,10 @@ export class SpaceRepository {
   /**
    * Update space by ID
    */
-  async updateById(id: string, updateData: Partial<ISpaceInput>): Promise<ISpace | null> {
+  async updateById(
+    id: string,
+    updateData: Partial<ISpaceInput>
+  ): Promise<ISpace | null> {
     return await Space.findOneAndUpdate(
       { _id: id, isDeleted: false },
       { $set: updateData },
@@ -104,14 +113,14 @@ export class SpaceRepository {
     }
 
     if (filters.city) {
-      query.city = new RegExp(filters.city, 'i');
+      query.city = new RegExp(filters.city, "i");
     }
 
     if (filters.search) {
       query.$or = [
-        { spaceName: new RegExp(filters.search, 'i') },
-        { city: new RegExp(filters.search, 'i') },
-        { spaceType: new RegExp(filters.search, 'i') },
+        { spaceName: new RegExp(filters.search, "i") },
+        { city: new RegExp(filters.search, "i") },
+        { spaceType: new RegExp(filters.search, "i") },
       ];
     }
 
@@ -121,16 +130,20 @@ export class SpaceRepository {
   /**
    * Check if space exists by name and city
    */
-  async existsByNameAndCity(spaceName: string, city: string, excludeId?: string): Promise<boolean> {
+  async existsByNameAndCity(
+    spaceName: string,
+    city: string,
+    excludeId?: string
+  ): Promise<boolean> {
     const query: any = {
-      spaceName: new RegExp(`^${spaceName}$`, 'i'),
-      city: new RegExp(`^${city}$`, 'i'),
+      spaceName: new RegExp(`^${spaceName}$`, "i"),
+      city: new RegExp(`^${city}$`, "i"),
       isDeleted: false,
     };
 
     // Exclude current space when checking for duplicates during update
     if (excludeId) {
-      query._id = { $ne: excludeId };
+      query._id = { $ne: new mongoose.Types.ObjectId(excludeId) };
     }
 
     const count = await Space.countDocuments(query);

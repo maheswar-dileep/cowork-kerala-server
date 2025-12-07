@@ -43,5 +43,9 @@ coverage/
 *.temp
 .cache/
 
+
 # Bun
 .bun/
+
+# Verification Scripts
+src/scripts/verify_*.ts

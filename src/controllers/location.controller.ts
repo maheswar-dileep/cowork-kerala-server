@@ -23,7 +23,11 @@ export class LocationController {
    * Get all locations
    * GET /api/v1/locations
    */
-  async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async getAll(
+    _req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const locations = await Location.find().sort({ createdAt: -1 });
       res.status(200).json({
