@@ -12,27 +12,15 @@ jobs:
             - name: Checkout Repository
               uses: actions/checkout@v2
 
-<<<<<<< HEAD
-      - name: Setup bun
-        uses: bun/action-setup@v2
-        with:
-          version: 1.1.10
-
-      - name: Building files
-        run: |
-          bun install
-          bun run build
-=======
             - name: Setup bun
               uses: oven-sh/setup-bun@v1
               with:
                   bun-version: 1.1.10
 
             - name: Building files
-              run: |
-                  bun install
-                  bun run build
->>>>>>> 4fa5713 (ci: Migrate CI/CD workflow from pnpm to bun, updating deployment directory and PM2 process names.)
+        run: |
+          bun install
+          bun run build
 
             - name: Generate SSH key
               run: |
