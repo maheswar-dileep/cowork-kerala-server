@@ -19,9 +19,9 @@ const spaceSchema = new Schema<ISpace>(
       trim: true,
     },
     city: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "Location",
       required: [true, "City is required"],
-      trim: true,
     },
     spaceCategory: {
       type: String,
@@ -82,7 +82,8 @@ spaceSchema.index({ isDeleted: 1 });
 
 // Pre-save hook to generate spaceId
 spaceSchema.pre("save", async function (next) {
-  if (!this.spaceId) {
+  const doc = this as unknown as ISpace;
+  if (!doc.spaceId) {
     try {
       // Get the current year
       const year = new Date().getFullYear();
@@ -100,7 +101,7 @@ spaceSchema.pre("save", async function (next) {
       }
 
       // Generate new ID: SP-YYYY-NNN
-      this.spaceId = `SP-${year}-${String(sequence).padStart(3, "0")}`;
+      doc.spaceId = `SP-${year}-${String(sequence).padStart(3, "0")}`;
     } catch (error: any) {
       next(error);
     }

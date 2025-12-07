@@ -1,4 +1,4 @@
-import { Document, Types } from 'mongoose';
+import { Document, Types } from "mongoose";
 
 export interface IPricing {
   hotDesk?: number;
@@ -24,7 +24,7 @@ export interface ISpace extends Document {
   spaceId: string; // Auto-generated ID like "SP-2025-001"
   spaceName: string;
   spaceType: string;
-  city: string;
+  city: Types.ObjectId | any; // Can be ID or populated Location object
   spaceCategory: string;
   shortDescription?: string;
   longDescription?: string;
@@ -33,7 +33,7 @@ export interface ISpace extends Document {
   location: ILocation;
   contact: IContact;
   images?: string[]; // Array of R2 image URLs
-  status: 'active' | 'inactive' | 'pending';
+  status: "active" | "inactive" | "pending";
   isDeleted: boolean; // For soft delete
   createdAt: Date;
   updatedAt: Date;
@@ -51,7 +51,7 @@ export interface ISpaceInput {
   location?: ILocation;
   contact?: IContact;
   images?: string[];
-  status?: 'active' | 'inactive' | 'pending';
+  status?: "active" | "inactive" | "pending";
 }
 
 export interface ISpaceResponse {
@@ -59,7 +59,7 @@ export interface ISpaceResponse {
   spaceId: string;
   spaceName: string;
   spaceType: string;
-  city: string;
+  city: any;
   spaceCategory: string;
   shortDescription?: string;
   longDescription?: string;
@@ -74,7 +74,7 @@ export interface ISpaceResponse {
 }
 
 export interface ISpaceFilters {
-  status?: 'active' | 'inactive' | 'pending';
+  status?: "active" | "inactive" | "pending";
   city?: string;
   search?: string;
 }

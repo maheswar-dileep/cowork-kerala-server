@@ -25,20 +25,36 @@ export class SpaceRepository {
       query.status = filters.status;
     }
 
+    // Handle city filter (find location IDs by name)
     if (filters.city) {
-      query.city = new RegExp(filters.city, "i"); // Case-insensitive search
+      const locations = await mongoose.model("Location").find({
+        name: new RegExp(filters.city, "i"),
+      });
+      const locationIds = locations.map((loc) => loc._id);
+      query.city = { $in: locationIds };
     }
 
     if (filters.search) {
+      const searchRegex = new RegExp(filters.search, "i");
+      // Find matching locations first
+      const locations = await mongoose.model("Location").find({
+        name: searchRegex,
+      });
+      const locationIds = locations.map((loc) => loc._id);
+
       query.$or = [
-        { spaceName: new RegExp(filters.search, "i") },
-        { city: new RegExp(filters.search, "i") },
-        { spaceType: new RegExp(filters.search, "i") },
+        { spaceName: searchRegex },
+        { city: { $in: locationIds } },
+        { spaceType: searchRegex },
       ];
     }
 
     const [spaces, total] = await Promise.all([
-      Space.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Space.find(query)
+        .populate("city")
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
       Space.countDocuments(query),
     ]);
 
@@ -49,14 +65,14 @@ export class SpaceRepository {
    * Find space by ID (excluding soft-deleted)
    */
   async findById(id: string): Promise<ISpace | null> {
-    return await Space.findOne({ _id: id, isDeleted: false });
+    return await Space.findOne({ _id: id, isDeleted: false }).populate("city");
   }
 
   /**
    * Find space by spaceId (excluding soft-deleted)
    */
   async findBySpaceId(spaceId: string): Promise<ISpace | null> {
-    return await Space.findOne({ spaceId, isDeleted: false });
+    return await Space.findOne({ spaceId, isDeleted: false }).populate("city");
   }
 
   /**
@@ -113,14 +129,24 @@ export class SpaceRepository {
     }
 
     if (filters.city) {
-      query.city = new RegExp(filters.city, "i");
+      const locations = await mongoose.model("Location").find({
+        name: new RegExp(filters.city, "i"),
+      });
+      const locationIds = locations.map((loc) => loc._id);
+      query.city = { $in: locationIds };
     }
 
     if (filters.search) {
+      const searchRegex = new RegExp(filters.search, "i");
+      const locations = await mongoose.model("Location").find({
+        name: searchRegex,
+      });
+      const locationIds = locations.map((loc) => loc._id);
+
       query.$or = [
-        { spaceName: new RegExp(filters.search, "i") },
-        { city: new RegExp(filters.search, "i") },
-        { spaceType: new RegExp(filters.search, "i") },
+        { spaceName: searchRegex },
+        { city: { $in: locationIds } },
+        { spaceType: searchRegex },
       ];
     }
 
@@ -137,7 +163,7 @@ export class SpaceRepository {
   ): Promise<boolean> {
     const query: any = {
       spaceName: new RegExp(`^${spaceName}$`, "i"),
-      city: new RegExp(`^${city}$`, "i"),
+      city: city, // Expecting ID now
       isDeleted: false,
     };
 

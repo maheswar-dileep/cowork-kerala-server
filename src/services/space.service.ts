@@ -1,4 +1,4 @@
-import { spaceRepository } from '@repositories/space.repository';
+import { spaceRepository } from "@repositories/space.repository";
 import {
   ISpace,
   ISpaceInput,
@@ -6,8 +6,8 @@ import {
   ISpaceFilters,
   IPaginationParams,
   IPaginatedSpacesResponse,
-} from '../types/space.types';
-import { ApiError } from '../types/common.types';
+} from "../types/space.types";
+import { ApiError } from "../types/common.types";
 
 export class SpaceService {
   /**
@@ -17,7 +17,10 @@ export class SpaceService {
     filters: ISpaceFilters,
     pagination: IPaginationParams
   ): Promise<IPaginatedSpacesResponse> {
-    const { spaces, total } = await spaceRepository.findAll(filters, pagination);
+    const { spaces, total } = await spaceRepository.findAll(
+      filters,
+      pagination
+    );
 
     const totalPages = Math.ceil(total / pagination.limit);
 
@@ -40,7 +43,7 @@ export class SpaceService {
     const space = await spaceRepository.findById(id);
 
     if (!space) {
-      throw new ApiError(404, 'Space not found');
+      throw new ApiError(404, "Space not found");
     }
 
     return this.formatSpaceResponse(space);
@@ -71,12 +74,15 @@ export class SpaceService {
   /**
    * Update space
    */
-  async updateSpace(id: string, updateData: Partial<ISpaceInput>): Promise<ISpaceResponse> {
+  async updateSpace(
+    id: string,
+    updateData: Partial<ISpaceInput>
+  ): Promise<ISpaceResponse> {
     // Check if space exists
     const existingSpace = await spaceRepository.findById(id);
 
     if (!existingSpace) {
-      throw new ApiError(404, 'Space not found');
+      throw new ApiError(404, "Space not found");
     }
 
     // If updating name or city, check for duplicates
@@ -85,7 +91,11 @@ export class SpaceService {
       const cityToCheck = updateData.city || existingSpace.city;
 
       // Pass the current space ID to exclude it from duplicate check
-      const exists = await spaceRepository.existsByNameAndCity(nameToCheck, cityToCheck, id);
+      const exists = await spaceRepository.existsByNameAndCity(
+        nameToCheck,
+        cityToCheck,
+        id
+      );
 
       if (exists) {
         throw new ApiError(
@@ -98,7 +108,7 @@ export class SpaceService {
     const updatedSpace = await spaceRepository.updateById(id, updateData);
 
     if (!updatedSpace) {
-      throw new ApiError(404, 'Space not found');
+      throw new ApiError(404, "Space not found");
     }
 
     return this.formatSpaceResponse(updatedSpace);
@@ -111,7 +121,7 @@ export class SpaceService {
     const space = await spaceRepository.softDeleteById(id);
 
     if (!space) {
-      throw new ApiError(404, 'Space not found');
+      throw new ApiError(404, "Space not found");
     }
   }
 
