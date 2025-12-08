@@ -1,96 +1,99 @@
 import { Document, Types } from "mongoose";
 
 export interface IPricing {
-  hotDesk?: number;
-  dedicatedDesk?: number;
-  privateOffice?: number;
+    hotDesk?: number;
+    dedicatedDesk?: number;
+    privateOffice?: number;
 }
 
 export interface ILocation {
-  address: string;
-  pincode: string;
-  latitude?: number;
-  longitude?: number;
+    address: string;
+    pincode: string;
+    latitude?: number;
+    longitude?: number;
 }
 
 export interface IContact {
-  name: string;
-  email: string;
-  phone: string;
+    name: string;
+    email: string;
+    phone: string;
 }
 
 export interface ISpace extends Document {
-  _id: Types.ObjectId;
-  spaceId: string; // Auto-generated ID like "SP-2025-001"
-  spaceName: string;
-  spaceType: string;
-  city: Types.ObjectId | any; // Can be ID or populated Location object
-  spaceCategory: string;
-  shortDescription?: string;
-  longDescription?: string;
-  amenities: string[];
-  pricing: IPricing;
-  location: ILocation;
-  contact: IContact;
-  images?: string[]; // Array of R2 image URLs
-  status: "active" | "inactive" | "pending";
-  isDeleted: boolean; // For soft delete
-  createdAt: Date;
-  updatedAt: Date;
+    _id: Types.ObjectId;
+    spaceId: string; // Auto-generated ID like "SP-2025-001"
+    spaceName: string;
+    spaceType: string;
+    city: Types.ObjectId | any; // Can be ID or populated Location object
+    spaceCategory: string;
+    shortDescription?: string;
+    longDescription?: string;
+    amenities: string[];
+    pricing: IPricing;
+    location: ILocation;
+    contact: IContact;
+    images?: string[]; // Array of R2 image URLs
+    status: "active" | "inactive" | "pending";
+    isFeatured: boolean;
+    isDeleted: boolean; // For soft delete
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface ISpaceInput {
-  spaceName: string;
-  spaceType: string;
-  city: string;
-  spaceCategory: string;
-  shortDescription?: string;
-  longDescription?: string;
-  amenities?: string[];
-  pricing?: IPricing;
-  location?: ILocation;
-  contact?: IContact;
-  images?: string[];
-  status?: "active" | "inactive" | "pending";
+    spaceName: string;
+    spaceType: string;
+    city: string;
+    spaceCategory: string;
+    shortDescription?: string;
+    longDescription?: string;
+    amenities?: string[];
+    pricing?: IPricing;
+    location?: ILocation;
+    contact?: IContact;
+    images?: string[];
+    status?: "active" | "inactive" | "pending";
+    isFeatured?: boolean;
 }
 
 export interface ISpaceResponse {
-  id: string;
-  spaceId: string;
-  spaceName: string;
-  spaceType: string;
-  city: any;
-  spaceCategory: string;
-  shortDescription?: string;
-  longDescription?: string;
-  amenities: string[];
-  pricing: IPricing;
-  location: ILocation;
-  contact: IContact;
-  images?: string[];
-  status: string;
-  createdAt: Date;
-  updatedAt: Date;
+    id: string;
+    spaceId: string;
+    spaceName: string;
+    spaceType: string;
+    city: any;
+    spaceCategory: string;
+    shortDescription?: string;
+    longDescription?: string;
+    amenities: string[];
+    pricing: IPricing;
+    location: ILocation;
+    contact: IContact;
+    images?: string[];
+    status: string;
+    isFeatured: boolean;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface ISpaceFilters {
-  status?: "active" | "inactive" | "pending";
-  city?: string;
-  search?: string;
+    status?: "active" | "inactive" | "pending";
+    city?: string;
+    search?: string;
 }
 
 export interface IPaginationParams {
-  page: number;
-  limit: number;
+    page: number;
+    limit: number;
 }
 
 export interface IPaginatedSpacesResponse {
-  success: boolean;
-  data: ISpaceResponse[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
+    success: boolean;
+    data: ISpaceResponse[];
+    pagination: {
+        page: number;
+        limit: number;
+        total: number;
+        totalPages: number;
+    };
 }

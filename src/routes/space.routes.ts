@@ -3,11 +3,11 @@ import { spaceController } from '@controllers/space.controller';
 import { authenticate } from '@middlewares/auth.middleware';
 import { validate } from '@middlewares/validation.middleware';
 import {
-  createSpaceSchema,
-  updateSpaceSchema,
-  getSpacesQuerySchema,
-  getSpaceByIdSchema,
-  deleteSpaceSchema,
+    createSpaceSchema,
+    updateSpaceSchema,
+    getSpacesQuerySchema,
+    getSpaceByIdSchema,
+    deleteSpaceSchema,
 } from '@validators/space.validator';
 
 const router = Router();
@@ -85,10 +85,44 @@ const router = Router();
  *         description: Unauthorized
  */
 router.get(
-  '/',
-  authenticate,
-  validate(getSpacesQuerySchema),
-  spaceController.getAll.bind(spaceController)
+    '/',
+    authenticate,
+    validate(getSpacesQuerySchema),
+    spaceController.getAll.bind(spaceController)
+);
+
+/**
+ * @swagger
+ * /spaces/featured:
+ *   get:
+ *     tags:
+ *       - Spaces
+ *     summary: Get featured coworking spaces
+ *     description: Retrieve list of featured coworking spaces
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of featured spaces retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Space'
+ *       401:
+ *         description: Unauthorized
+ */
+router.get(
+    '/featured',
+    // authenticate, // Optional: Decide if authentication is required for featured spaces
+    spaceController.getFeatured.bind(spaceController)
 );
 
 /**
@@ -127,10 +161,10 @@ router.get(
  *         description: Unauthorized
  */
 router.get(
-  '/:id',
-  authenticate,
-  validate(getSpaceByIdSchema),
-  spaceController.getById.bind(spaceController)
+    '/:id',
+    authenticate,
+    validate(getSpaceByIdSchema),
+    spaceController.getById.bind(spaceController)
 );
 
 /**
@@ -249,10 +283,10 @@ router.get(
  *         description: Unauthorized
  */
 router.post(
-  '/',
-  authenticate,
-  validate(createSpaceSchema),
-  spaceController.create.bind(spaceController)
+    '/',
+    authenticate,
+    validate(createSpaceSchema),
+    spaceController.create.bind(spaceController)
 );
 
 /**
@@ -330,10 +364,10 @@ router.post(
  *         description: Unauthorized
  */
 router.put(
-  '/:id',
-  authenticate,
-  validate(updateSpaceSchema),
-  spaceController.update.bind(spaceController)
+    '/:id',
+    authenticate,
+    validate(updateSpaceSchema),
+    spaceController.update.bind(spaceController)
 );
 
 /**
@@ -366,10 +400,10 @@ router.put(
  *         description: Unauthorized
  */
 router.delete(
-  '/:id',
-  authenticate,
-  validate(deleteSpaceSchema),
-  spaceController.delete.bind(spaceController)
+    '/:id',
+    authenticate,
+    validate(deleteSpaceSchema),
+    spaceController.delete.bind(spaceController)
 );
 
 export default router;
