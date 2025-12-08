@@ -1,15 +1,15 @@
-import jwt from 'jsonwebtoken';
-import crypto from 'crypto';
-import { userRepository } from '@repositories/user.repository';
+import jwt from "jsonwebtoken";
+import crypto from "crypto";
+import { userRepository } from "@repositories/user.repository";
 import {
   IUser,
   IUserResponse,
   IAuthResponse,
   ILoginCredentials,
-} from '../types/user.types';
-import { IJWTPayload } from '../types/express';
-import { config } from '@config/env';
-import { ApiError } from '../types/common.types';
+} from "../types/user.types";
+import { IJWTPayload } from "../types/express";
+import { config } from "@config/env";
+import { ApiError } from "../types/common.types";
 
 export class AuthService {
   /**
@@ -22,19 +22,19 @@ export class AuthService {
     const user = await userRepository.findByEmail(email);
 
     if (!user) {
-      throw new ApiError(401, 'Invalid email or password');
+      throw new ApiError(401, "Invalid email or password");
     }
 
     // Check if user is active
     if (!user.isActive) {
-      throw new ApiError(403, 'Account is inactive. Please contact support.');
+      throw new ApiError(403, "Account is inactive. Please contact support.");
     }
 
     // Verify password
     const isPasswordValid = await user.comparePassword(password);
 
     if (!isPasswordValid) {
-      throw new ApiError(401, 'Invalid email or password');
+      throw new ApiError(401, "Invalid email or password");
     }
 
     // Generate JWT token
@@ -72,7 +72,7 @@ export class AuthService {
     try {
       return jwt.verify(token, config.jwt.secret) as IJWTPayload;
     } catch (error) {
-      throw new ApiError(401, 'Invalid or expired token');
+      throw new ApiError(401, "Invalid or expired token");
     }
   }
 
@@ -84,12 +84,18 @@ export class AuthService {
 
     if (!user) {
       // Don't reveal that email doesn't exist for security
-      throw new ApiError(200, 'If the email exists, a reset link has been sent');
+      throw new ApiError(
+        200,
+        "If the email exists, a reset link has been sent"
+      );
     }
 
     // Generate reset token
-    const resetToken = crypto.randomBytes(32).toString('hex');
-    const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
 
     // Calculate expiry (1 hour from now)
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
@@ -105,13 +111,13 @@ export class AuthService {
    */
   async resetPassword(token: string, newPassword: string): Promise<void> {
     // Hash the token to match database
-    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
     // Find user with valid reset token
     const user = await userRepository.findByResetToken(hashedToken);
 
     if (!user) {
-      throw new ApiError(400, 'Invalid or expired reset token');
+      throw new ApiError(400, "Invalid or expired reset token");
     }
 
     // Update password
@@ -130,22 +136,28 @@ export class AuthService {
     currentPassword: string,
     newPassword: string
   ): Promise<void> {
-    const user = await userRepository.findByEmail(
-      (await userRepository.findById(userId))?.email || ''
-    );
+    // First get the user without password to get email
+    const userWithoutPassword = await userRepository.findById(userId);
+
+    if (!userWithoutPassword) {
+      throw new ApiError(404, "User not found");
+    }
+
+    // Then get the user with password for comparison
+    const user = await userRepository.findByEmail(userWithoutPassword.email);
 
     if (!user) {
-      throw new ApiError(404, 'User not found');
+      throw new ApiError(404, "User not found");
     }
 
     // Verify current password
     const isPasswordValid = await user.comparePassword(currentPassword);
 
     if (!isPasswordValid) {
-      throw new ApiError(401, 'Current password is incorrect');
+      throw new ApiError(401, "Current password is incorrect");
     }
 
-    // Update password
+    // Update password - this will trigger the pre-save hook to hash it
     user.password = newPassword;
     await user.save();
   }
