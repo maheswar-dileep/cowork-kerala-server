@@ -86,7 +86,7 @@ const router = Router();
  */
 router.get(
     '/',
-    authenticate,
+    // authenticate,
     validate(getSpacesQuerySchema),
     spaceController.getAll.bind(spaceController)
 );
